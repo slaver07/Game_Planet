@@ -18,12 +18,10 @@ namespace GamePlanet
         private float _speed = 1.5f;
         private float _sensitivity = 0.2f;
 
-        private Vector2 _lastMousePosition;
-        private bool _firstMove = true;
-
         public Camera(Vector3 position)
         {
             _position = position;
+            UpdateDirectionVectors();
         }
 
         public Matrix4 GetViewMatrix()
@@ -54,22 +52,18 @@ namespace GamePlanet
                 _position -= _up * delta;
         }
 
-        public void MouseMove(Vector2 mousePosition)
+        public void AddRotation(float deltaX, float deltaY)
         {
-            if (_firstMove)
-            {
-                _lastMousePosition = mousePosition;
-                _firstMove = false;
-            }
-
-            var delta = mousePosition - _lastMousePosition;
-            _lastMousePosition = mousePosition;
-
-            _yaw += delta.X * _sensitivity;
-            _pitch -= delta.Y * _sensitivity;
+            _yaw += deltaX * _sensitivity;
+            _pitch -= deltaY * _sensitivity;
 
             _pitch = MathHelper.Clamp(_pitch, -89f, 89f);
 
+            UpdateDirectionVectors();
+        }
+
+        private void UpdateDirectionVectors()
+        {
             Vector3 direction;
             direction.X = MathF.Cos(MathHelper.DegreesToRadians(_pitch)) * MathF.Cos(MathHelper.DegreesToRadians(_yaw));
             direction.Y = MathF.Sin(MathHelper.DegreesToRadians(_pitch));
@@ -80,6 +74,30 @@ namespace GamePlanet
             _up = Vector3.Normalize(Vector3.Cross(_right, _front));
         }
 
-        public Vector3 Position => _position;
+        public Vector3 Position
+        {
+            get => _position;
+            set => _position = value;
+        }
+
+        public float Yaw
+        {
+            get => _yaw;
+            set
+            {
+                _yaw = value;
+                UpdateDirectionVectors();
+            }
+        }
+
+        public float Pitch
+        {
+            get => _pitch;
+            set
+            {
+                _pitch = MathHelper.Clamp(value, -89f, 89f);
+                UpdateDirectionVectors();
+            }
+        }
     }
 }

@@ -1,40 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using OpenTK.Audio.OpenAL;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-
-using System.IO;
+using System;
 
 namespace GamePlanet
 {
     internal class Game : GameWindow
     {
-        private Sphere earthSphere;
-        private Sphere moonSphere;
+        private Sphere _earth;
+        private Sphere _moon;
 
-        private Texture earthTexture;
-        private Texture moonTexture;
+        private Texture _earthTexture;
+        private Texture _moonTexture;
 
-        private Shader shader;
+        private Shader _shader;
 
-        private Camera camera;
+        private Camera _camera;
+        private bool _firstMove = true;
+        private Vector2 _lastPos;
 
-        private float earthRotation = 0f;
-        private float moonAngle = 0f;
+        private float _earthRotation;
+        private float _moonOrbitAngle;
 
-        public Game(int width, int height) : base(GameWindowSettings.Default, new NativeWindowSettings
-        {
-            Size = new Vector2i(width, height),
-            Title = "Earth and Moon"
-        })
+        private bool _fullscreen = false;
+        private bool _wireframe = false;
+
+        public Game(int width, int height) : base(
+            GameWindowSettings.Default,
+            new NativeWindowSettings
+            {
+                Size = new Vector2i(width, height),
+                Title = "Earth and Moon - OpenTK",
+                Flags = ContextFlags.ForwardCompatible
+            })
         {
             CenterWindow(new Vector2i(width, height));
         }
@@ -45,17 +45,19 @@ namespace GamePlanet
 
             GL.ClearColor(0f, 0f, 0f, 1f);
             GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
 
-            shader = new Shader("shader.vert", "shader.frag");
-            shader.Use();
+            _shader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
+            _shader.Use();
 
-            earthSphere = new Sphere();
-            moonSphere = new Sphere();
+            _earth = new Sphere();
+            _moon = new Sphere();
 
-            earthTexture = new Texture("earth.jpg");
-            moonTexture = new Texture("moon.jpg");
+            _earthTexture = new Texture("Textures/earth.jpg");
+            _moonTexture = new Texture("Textures/moon.jpg");
 
-            camera = new Camera(new Vector3(0f, 0f, 10f));
+            _camera = new Camera(new Vector3(0f, 0f, 10f));
 
             CursorState = CursorState.Grabbed;
         }
@@ -66,24 +68,23 @@ namespace GamePlanet
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            shader.Use();
+            _shader.Use();
 
-            // Передаём общую матрицу проекции и вида
-            shader.SetMatrix4("view", camera.GetViewMatrix());
-            shader.SetMatrix4("projection", camera.GetProjectionMatrix(Size.X, Size.Y));
+            _shader.SetMatrix4("view", _camera.GetViewMatrix());
+            _shader.SetMatrix4("projection", _camera.GetProjectionMatrix(Size.X, Size.Y));
 
-            // Отрисовка Земли
-            Matrix4 earthModel = Matrix4.CreateRotationY(earthRotation);
-            shader.SetMatrix4("model", earthModel);
-            earthTexture.Use();
-            earthSphere.Render();
+            // Земля
+            Matrix4 earthModel = Matrix4.CreateRotationY(_earthRotation);
+            _shader.SetMatrix4("model", earthModel);
+            _earthTexture.Use();
+            _earth.Render();
 
-            // Отрисовка Луны
-            Vector3 moonPosition = new Vector3(MathF.Cos(moonAngle) * 3f, 0, MathF.Sin(moonAngle) * 3f);
+            // Луна
+            Vector3 moonPosition = new Vector3(MathF.Cos(_moonOrbitAngle) * 3f, 0f, MathF.Sin(_moonOrbitAngle) * 3f);
             Matrix4 moonModel = Matrix4.CreateScale(0.27f) * Matrix4.CreateTranslation(moonPosition);
-            shader.SetMatrix4("model", moonModel);
-            moonTexture.Use();
-            moonSphere.Render();
+            _shader.SetMatrix4("model", moonModel);
+            _moonTexture.Use();
+            _moon.Render();
 
             SwapBuffers();
         }
@@ -91,20 +92,53 @@ namespace GamePlanet
         protected override void OnUpdateFrame(FrameEventArgs args)
         {
             base.OnUpdateFrame(args);
-
             if (!IsFocused) return;
 
-            if (KeyboardState.IsKeyDown(Keys.Escape))
+            var input = KeyboardState;
+
+            if (input.IsKeyPressed(Keys.Escape))
                 Close();
 
-            camera.Update(args, KeyboardState);
+            if (input.IsKeyPressed(Keys.F11))
+            {
+                _fullscreen = !_fullscreen;
+                WindowState = _fullscreen ? WindowState.Fullscreen : WindowState.Normal;
+            }
 
+            if (input.IsKeyPressed(Keys.F3))
+            {
+                _wireframe = !_wireframe;
+                GL.PolygonMode(MaterialFace.FrontAndBack, _wireframe ? PolygonMode.Line : PolygonMode.Fill);
+            }
+
+            if (input.IsKeyPressed(Keys.R))
+            {
+                _camera.Position = new Vector3(0f, 0f, 10f);
+                _camera.Yaw = -90f;
+                _camera.Pitch = 0f;
+            }
+
+            _camera.Update(args, KeyboardState);
+
+            // Обработка мыши
             var mouse = MouseState;
-            camera.MouseMove(mouse.Position);
+            if (_firstMove)
+            {
+                _lastPos = mouse.Position;
+                _firstMove = false;
+            }
+            else
+            {
+                var deltaX = mouse.Position.X - _lastPos.X;
+                var deltaY = _lastPos.Y - mouse.Position.Y;
+                _lastPos = mouse.Position;
 
-            // Вращение Земли и Луны
-            earthRotation += (float)args.Time * 0.5f;
-            moonAngle += (float)args.Time;
+                _camera.AddRotation((float)deltaX, (float)deltaY);
+            }
+
+            // Обновление анимации
+            _earthRotation += (float)args.Time * 0.5f;
+            _moonOrbitAngle += (float)args.Time;
         }
 
         protected override void OnResize(ResizeEventArgs e)
@@ -117,9 +151,12 @@ namespace GamePlanet
         {
             base.OnUnload();
 
-            earthTexture.Dispose();
-            moonTexture.Dispose();
-            shader.Dispose();
+            _earthTexture?.Dispose();
+            _moonTexture?.Dispose();
+            _shader?.Dispose();
+
+            _earth?.Dispose();
+            _moon?.Dispose();
         }
     }
 }
