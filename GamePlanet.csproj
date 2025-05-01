@@ -6,8 +6,26 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Textures\earth.jpg" />
+    <None Remove="Textures\moon.jpg" />
+    <None Remove="Textures\stars.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Textures\earth.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Textures\moon.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Textures\stars.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="OpenTK" Version="4.8.2" />
-    <PackageReference Include="System.Drawing.Common" Version="9.0.4" />
+    <PackageReference Include="StbImageSharp" Version="2.30.15" />
   </ItemGroup>
 
 </Project>

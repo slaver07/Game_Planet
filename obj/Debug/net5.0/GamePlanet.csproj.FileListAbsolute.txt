@@ -14,7 +14,6 @@ C:\Users\black\source\repos\GamePlanet\bin\Debug\net5.0\OpenTK.Mathematics.dll
 C:\Users\black\source\repos\GamePlanet\bin\Debug\net5.0\OpenTK.Windowing.Common.dll
 C:\Users\black\source\repos\GamePlanet\bin\Debug\net5.0\OpenTK.Windowing.Desktop.dll
 C:\Users\black\source\repos\GamePlanet\bin\Debug\net5.0\OpenTK.Windowing.GraphicsLibraryFramework.dll
-C:\Users\black\source\repos\GamePlanet\bin\Debug\net5.0\System.Drawing.Common.dll
 C:\Users\black\source\repos\GamePlanet\bin\Debug\net5.0\runtimes\linux-x64\native\libglfw-wayland.so.3.3
 C:\Users\black\source\repos\GamePlanet\bin\Debug\net5.0\runtimes\linux-x64\native\libglfw.so.3.3
 C:\Users\black\source\repos\GamePlanet\bin\Debug\net5.0\runtimes\osx-arm64\native\libglfw.3.dylib
@@ -31,3 +30,7 @@ C:\Users\black\source\repos\GamePlanet\obj\Debug\net5.0\GamePlanet.dll
 C:\Users\black\source\repos\GamePlanet\obj\Debug\net5.0\ref\GamePlanet.dll
 C:\Users\black\source\repos\GamePlanet\obj\Debug\net5.0\GamePlanet.pdb
 C:\Users\black\source\repos\GamePlanet\obj\Debug\net5.0\GamePlanet.genruntimeconfig.cache
+C:\Users\black\source\repos\GamePlanet\bin\Debug\net5.0\StbImageSharp.dll
+C:\Users\black\source\repos\GamePlanet\bin\Debug\net5.0\Textures\earth.jpg
+C:\Users\black\source\repos\GamePlanet\bin\Debug\net5.0\Textures\moon.jpg
+C:\Users\black\source\repos\GamePlanet\bin\Debug\net5.0\Textures\stars.jpg

@@ -1,7 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
+using StbImageSharp;
 using System;
-using System.Drawing;
-using System.Drawing.Imaging;
+using System.IO;
 
 namespace GamePlanet
 {
@@ -14,35 +14,30 @@ namespace GamePlanet
             Handle = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, Handle);
 
-            using (var image = new Bitmap(path))
+            // Загружаем изображение
+            using (var stream = File.OpenRead(path))
             {
-                image.RotateFlip(RotateFlipType.RotateNoneFlipY);
+                var image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
 
-                var data = image.LockBits(
-                    new Rectangle(0, 0, image.Width, image.Height),
-                    ImageLockMode.ReadOnly,
-                    System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-                GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
-
+                // Загрузка изображения в OpenGL
                 GL.TexImage2D(TextureTarget.Texture2D,
-                              0,
-                              PixelInternalFormat.Rgba,
-                              image.Width,
-                              image.Height,
-                              0,
-                              OpenTK.Graphics.OpenGL4.PixelFormat.Bgra,
-                              PixelType.UnsignedByte,
-                              data.Scan0);
-
-                image.UnlockBits(data);
+                              level: 0,
+                              internalformat: PixelInternalFormat.Rgba,
+                              width: image.Width,
+                              height: image.Height,
+                              border: 0,
+                              format: PixelFormat.Rgba,
+                              type: PixelType.UnsignedByte,
+                              pixels: image.Data);
             }
 
+            // Установка параметров текстуры
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
 
+            // Генерация MipMap
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
 
