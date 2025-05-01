@@ -18,8 +18,6 @@ namespace GamePlanet
         private Shader _shader;
 
         private Camera _camera;
-        private bool _firstMove = true;
-        private Vector2 _lastPos;
 
         private float _earthRotation;
         private float _moonOrbitAngle;
@@ -94,49 +92,53 @@ namespace GamePlanet
             base.OnUpdateFrame(args);
             if (!IsFocused) return;
 
-            var input = KeyboardState;
+            var keyboard = KeyboardState;
+            var mouse = MouseState;
 
-            if (input.IsKeyPressed(Keys.Escape))
+            // Управление окнами
+            if (keyboard.IsKeyPressed(Keys.Escape))
                 Close();
 
-            if (input.IsKeyPressed(Keys.F11))
+            if (keyboard.IsKeyPressed(Keys.F11))
             {
                 _fullscreen = !_fullscreen;
                 WindowState = _fullscreen ? WindowState.Fullscreen : WindowState.Normal;
             }
 
-            if (input.IsKeyPressed(Keys.F3))
+            if (keyboard.IsKeyPressed(Keys.F3))
             {
                 _wireframe = !_wireframe;
                 GL.PolygonMode(MaterialFace.FrontAndBack, _wireframe ? PolygonMode.Line : PolygonMode.Fill);
             }
 
-            if (input.IsKeyPressed(Keys.R))
+            // Сброс камеры
+            if (keyboard.IsKeyPressed(Keys.R))
             {
                 _camera.Position = new Vector3(0f, 0f, 10f);
                 _camera.Yaw = -90f;
                 _camera.Pitch = 0f;
             }
 
-            _camera.Update(args, KeyboardState);
-
-            // Обработка мыши
-            var mouse = MouseState;
-            if (_firstMove)
+            // Переключение состояния камеры (активна/неактивна)
+            if (keyboard.IsKeyPressed(Keys.Space))
             {
-                _lastPos = mouse.Position;
-                _firstMove = false;
-            }
-            else
-            {
-                var deltaX = mouse.Position.X - _lastPos.X;
-                var deltaY = _lastPos.Y - mouse.Position.Y;
-                _lastPos = mouse.Position;
-
-                _camera.AddRotation((float)deltaX, (float)deltaY);
+                _camera.ToggleCameraControl();
+                CursorState = _camera.IsCameraActive ? CursorState.Grabbed : CursorState.Normal;
             }
 
-            // Обновление анимации
+            // Обновление позиции камеры (если активна)
+            _camera.Update(args, keyboard);
+
+            if (_camera.IsCameraActive && IsFocused)
+            {
+                _camera.AddRotation(mouse.Delta.X, -mouse.Delta.Y); // -Y — инвертируем, т.к. мышь двигается вниз — pitch вверх
+            }
+
+            // Приближение/отдаление
+            if (mouse.ScrollDelta.Y != 0)
+                _camera.Zoom(mouse.ScrollDelta.Y * 5f);
+
+            // Анимация
             _earthRotation += (float)args.Time * 0.5f;
             _moonOrbitAngle += (float)args.Time;
         }

@@ -11,12 +11,19 @@ namespace GamePlanet
         private Vector3 _front = -Vector3.UnitZ;
         private Vector3 _up = Vector3.UnitY;
         private Vector3 _right = Vector3.UnitX;
+        private Vector3 _worldUp = Vector3.UnitY;
 
         private float _pitch;
         private float _yaw = -90f;
 
-        private float _speed = 1.5f;
+        private float _speed = 5f;
         private float _sensitivity = 0.2f;
+        private float _zoom = 45f;
+
+        private float _minDistance = 5f;
+        private float _maxDistance = 30f;
+
+        public bool IsCameraActive { get; private set; } = true;
 
         public Camera(Vector3 position)
         {
@@ -31,12 +38,15 @@ namespace GamePlanet
 
         public Matrix4 GetProjectionMatrix(float width, float height)
         {
-            return Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45f), width / height, 0.1f, 100f);
+            return Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(_zoom), width / height, 0.1f, 100f);
         }
 
         public void Update(FrameEventArgs args, KeyboardState input)
         {
             float delta = (float)args.Time * _speed;
+
+            if (!IsCameraActive)
+                return;
 
             if (input.IsKeyDown(Keys.W))
                 _position += _front * delta;
@@ -46,20 +56,54 @@ namespace GamePlanet
                 _position -= _right * delta;
             if (input.IsKeyDown(Keys.D))
                 _position += _right * delta;
-            if (input.IsKeyDown(Keys.Space))
-                _position += _up * delta;
+            if (input.IsKeyDown(Keys.RightShift))
+                _position += _worldUp * delta;
             if (input.IsKeyDown(Keys.LeftShift))
-                _position -= _up * delta;
+                _position -= _worldUp * delta;
+
+            // Zoom via keyboard (optional)
+            if (input.IsKeyDown(Keys.E))
+                Zoom(-delta * 10f);
+            if (input.IsKeyDown(Keys.Q))
+                Zoom(delta * 10f);
+
+            ClampDistance();
+        }
+
+        public void ToggleCameraControl()
+        {
+            IsCameraActive = !IsCameraActive;
         }
 
         public void AddRotation(float deltaX, float deltaY)
         {
+            if (!IsCameraActive)
+                return;
+
             _yaw += deltaX * _sensitivity;
-            _pitch -= deltaY * _sensitivity;
+            _pitch += deltaY * _sensitivity;
 
             _pitch = MathHelper.Clamp(_pitch, -89f, 89f);
 
             UpdateDirectionVectors();
+        }
+
+        public void Zoom(float amount)
+        {
+            _zoom = MathHelper.Clamp(_zoom - amount, 15f, 90f);
+        }
+
+        private void ClampDistance()
+        {
+            float distance = _position.Length;
+            if (distance > _maxDistance)
+            {
+                _position = Vector3.Normalize(_position) * _maxDistance;
+            }
+            else if (distance < _minDistance)
+            {
+                _position = Vector3.Normalize(_position) * _minDistance;
+            }
         }
 
         private void UpdateDirectionVectors()
@@ -70,7 +114,7 @@ namespace GamePlanet
             direction.Z = MathF.Cos(MathHelper.DegreesToRadians(_pitch)) * MathF.Sin(MathHelper.DegreesToRadians(_yaw));
 
             _front = Vector3.Normalize(direction);
-            _right = Vector3.Normalize(Vector3.Cross(_front, Vector3.UnitY));
+            _right = Vector3.Normalize(Vector3.Cross(_front, _worldUp));
             _up = Vector3.Normalize(Vector3.Cross(_right, _front));
         }
 
