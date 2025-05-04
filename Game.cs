@@ -72,14 +72,14 @@ namespace GamePlanet
             _shader.SetMatrix4("projection", _camera.GetProjectionMatrix(Size.X, Size.Y));
 
             // Земля
-            Matrix4 earthModel = Matrix4.CreateRotationY(_earthRotation);
+            Matrix4 earthModel = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(-90f)) * Matrix4.CreateRotationY(_earthRotation);
             _shader.SetMatrix4("model", earthModel);
             _earthTexture.Use();
             _earth.Render();
 
             // Луна
             Vector3 moonPosition = new Vector3(MathF.Cos(_moonOrbitAngle) * 3f, 0f, MathF.Sin(_moonOrbitAngle) * 3f);
-            Matrix4 moonModel = Matrix4.CreateScale(0.27f) * Matrix4.CreateTranslation(moonPosition);
+            Matrix4 moonModel =Matrix4.CreateRotationX(MathHelper.DegreesToRadians(-90f)) * Matrix4.CreateScale(0.27f) *Matrix4.CreateTranslation(moonPosition);
             _shader.SetMatrix4("model", moonModel);
             _moonTexture.Use();
             _moon.Render();

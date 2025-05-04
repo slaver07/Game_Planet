@@ -17,26 +17,49 @@ namespace GamePlanet
             List<float> vertices = new List<float>();
             List<uint> indices = new List<uint>();
 
+            float x, y, z, xy;
+            float nx, ny, nz, lengthInv = 1.0f / radius;
+            float s, t;
+
+            float sectorStep = MathHelper.TwoPi / sectorCount;
+            float stackStep = MathF.PI / stackCount;
+            float sectorAngle, stackAngle;
+
             for (int i = 0; i <= stackCount; ++i)
             {
-                float stackAngle = MathHelper.PiOver2 - i * MathHelper.Pi / stackCount;
-                float xy = radius * MathF.Cos(stackAngle);
-                float z = radius * MathF.Sin(stackAngle);
+                stackAngle = MathF.PI / 2 - i * stackStep;
+                xy = radius * MathF.Cos(stackAngle);
+                z = radius * MathF.Sin(stackAngle); 
 
                 for (int j = 0; j <= sectorCount; ++j)
                 {
-                    float sectorAngle = j * MathHelper.TwoPi / sectorCount;
-                    float x = xy * MathF.Cos(sectorAngle);
-                    float y = xy * MathF.Sin(sectorAngle);
+                    sectorAngle = j * sectorStep;
 
-                    float u = (float)j / sectorCount;
-                    float v = (float)i / stackCount;
+                    // vertex position (x, y, z)
+                    x = xy * MathF.Cos(sectorAngle);
+                    y = xy * MathF.Sin(sectorAngle);
 
-                    // position (x, y, z), normal (x, y, z), texCoord (u, v)
-                    vertices.AddRange(new float[] { x, y, z, x, y, z, u, v });
+                    // normalized vertex normal (nx, ny, nz)
+                    nx = x * lengthInv;
+                    ny = y * lengthInv;
+                    nz = z * lengthInv;
+
+                    // vertex tex coord (s, t) range between [0, 1]
+                    s = (float)j / sectorCount;
+                    t = (float)i / stackCount;
+
+                    vertices.Add(x);
+                    vertices.Add(y);
+                    vertices.Add(z);
+                    vertices.Add(nx);
+                    vertices.Add(ny);
+                    vertices.Add(nz);
+                    vertices.Add(s);
+                    vertices.Add(t);
                 }
             }
 
+            // generate indices
             for (int i = 0; i < stackCount; ++i)
             {
                 int k1 = i * (sectorCount + 1);

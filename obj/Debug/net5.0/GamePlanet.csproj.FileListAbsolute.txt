@@ -20,7 +20,6 @@ C:\Users\black\source\repos\GamePlanet\bin\Debug\net5.0\runtimes\osx-arm64\nativ
 C:\Users\black\source\repos\GamePlanet\bin\Debug\net5.0\runtimes\osx-x64\native\libglfw.3.dylib
 C:\Users\black\source\repos\GamePlanet\bin\Debug\net5.0\runtimes\win-x64\native\glfw3.dll
 C:\Users\black\source\repos\GamePlanet\bin\Debug\net5.0\runtimes\win-x86\native\glfw3.dll
-C:\Users\black\source\repos\GamePlanet\obj\Debug\net5.0\GamePlanet.csproj.AssemblyReference.cache
 C:\Users\black\source\repos\GamePlanet\obj\Debug\net5.0\GamePlanet.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\black\source\repos\GamePlanet\obj\Debug\net5.0\GamePlanet.AssemblyInfoInputs.cache
 C:\Users\black\source\repos\GamePlanet\obj\Debug\net5.0\GamePlanet.AssemblyInfo.cs
@@ -34,3 +33,4 @@ C:\Users\black\source\repos\GamePlanet\bin\Debug\net5.0\StbImageSharp.dll
 C:\Users\black\source\repos\GamePlanet\bin\Debug\net5.0\Textures\earth.jpg
 C:\Users\black\source\repos\GamePlanet\bin\Debug\net5.0\Textures\moon.jpg
 C:\Users\black\source\repos\GamePlanet\bin\Debug\net5.0\Textures\stars.jpg
+C:\Users\black\source\repos\GamePlanet\obj\Debug\net5.0\GamePlanet.csproj.AssemblyReference.cache
