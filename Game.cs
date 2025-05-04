@@ -55,7 +55,7 @@ namespace GamePlanet
 
             _earth = new Sphere();
             _moon = new Sphere();
-            _skySphere = new Sphere(1f, 288, 144);
+            _skySphere = new Sphere(1f, 360, 180);
             _cloudsSphere = new Sphere();
 
             _earthTexture = new Texture("Textures/earth.jpg"); //8k_earth_nightmap  earth
@@ -164,7 +164,7 @@ namespace GamePlanet
 
 
             // Анимация вращения
-            _earthRotation += (float)args.Time * 0.5f;
+            _earthRotation -= (float)args.Time * 0.5f;
             _moonOrbitAngle += (float)args.Time;
         }
 

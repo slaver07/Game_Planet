@@ -14,12 +14,11 @@ namespace GamePlanet
             Handle = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, Handle);
 
-            // Загружаем изображение
             using (var stream = File.OpenRead(path))
             {
                 var image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
 
-                // Загрузка изображения в OpenGL
+                // Загрузка изображения
                 GL.TexImage2D(TextureTarget.Texture2D,
                               level: 0,
                               internalformat: PixelInternalFormat.Rgba,
