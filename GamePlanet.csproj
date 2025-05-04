@@ -6,19 +6,24 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Textures\1.jpg" />
+    <None Remove="Textures\8k_earth_nightmap.jpg" />
     <None Remove="Textures\earth.jpg" />
     <None Remove="Textures\moon.jpg" />
     <None Remove="Textures\stars.jpg" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Textures\8k_earth_nightmap.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Textures\stars.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Textures\earth.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Textures\moon.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Textures\stars.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

@@ -34,3 +34,4 @@ C:\Users\black\source\repos\GamePlanet\bin\Debug\net5.0\Textures\earth.jpg
 C:\Users\black\source\repos\GamePlanet\bin\Debug\net5.0\Textures\moon.jpg
 C:\Users\black\source\repos\GamePlanet\bin\Debug\net5.0\Textures\stars.jpg
 C:\Users\black\source\repos\GamePlanet\obj\Debug\net5.0\GamePlanet.csproj.AssemblyReference.cache
+C:\Users\black\source\repos\GamePlanet\bin\Debug\net5.0\Textures\8k_earth_nightmap.jpg

@@ -18,7 +18,6 @@ namespace GamePlanet
 
         private float _speed = 5f;
         private float _sensitivity = 0.2f;
-        private float _zoom = 45f;
 
         private float _minDistance = 5f;
         private float _maxDistance = 30f;
@@ -38,7 +37,7 @@ namespace GamePlanet
 
         public Matrix4 GetProjectionMatrix(float width, float height)
         {
-            return Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(_zoom), width / height, 0.1f, 100f);
+            return Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45f), width / height, 0.1f, 100f);
         }
 
         public void Update(FrameEventArgs args, KeyboardState input)
@@ -61,12 +60,6 @@ namespace GamePlanet
             if (input.IsKeyDown(Keys.LeftShift))
                 _position -= _worldUp * delta;
 
-            // Zoom via keyboard (optional)
-            if (input.IsKeyDown(Keys.E))
-                Zoom(-delta * 10f);
-            if (input.IsKeyDown(Keys.Q))
-                Zoom(delta * 10f);
-
             ClampDistance();
         }
 
@@ -86,11 +79,6 @@ namespace GamePlanet
             _pitch = MathHelper.Clamp(_pitch, -89f, 89f);
 
             UpdateDirectionVectors();
-        }
-
-        public void Zoom(float amount)
-        {
-            _zoom = MathHelper.Clamp(_zoom - amount, 15f, 90f);
         }
 
         private void ClampDistance()

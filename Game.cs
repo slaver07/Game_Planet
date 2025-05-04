@@ -11,9 +11,11 @@ namespace GamePlanet
     {
         private Sphere _earth;
         private Sphere _moon;
+        private Sphere _skySphere;
 
         private Texture _earthTexture;
         private Texture _moonTexture;
+        private Texture _skyTexture;
 
         private Shader _shader;
 
@@ -51,12 +53,13 @@ namespace GamePlanet
 
             _earth = new Sphere();
             _moon = new Sphere();
+            _skySphere = new Sphere(1f, 72, 36); // гладкая сфера
 
-            _earthTexture = new Texture("Textures/earth.jpg");
+            _earthTexture = new Texture("Textures/earth.jpg"); //8k_earth_nightmap  earth
             _moonTexture = new Texture("Textures/moon.jpg");
+            _skyTexture = new Texture("Textures/stars.jpg");
 
             _camera = new Camera(new Vector3(0f, 0f, 10f));
-
             CursorState = CursorState.Grabbed;
         }
 
@@ -65,21 +68,34 @@ namespace GamePlanet
             base.OnRenderFrame(args);
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
             _shader.Use();
 
             _shader.SetMatrix4("view", _camera.GetViewMatrix());
             _shader.SetMatrix4("projection", _camera.GetProjectionMatrix(Size.X, Size.Y));
 
-            // Земля
+            // ==== РЕНДЕР ФОНА (звёздной сферы) ====
+            GL.DepthMask(false); // Не пишем в буфер глубины
+            GL.Disable(EnableCap.CullFace); // Отрисовать внутреннюю часть сферы
+
+            Matrix4 skyModel = Matrix4.CreateScale(100f) * Matrix4.CreateTranslation(_camera.Position);
+            _shader.SetMatrix4("model", skyModel);
+            _skyTexture.Use();
+            _skySphere.Render();
+
+            GL.DepthMask(true);
+            GL.Enable(EnableCap.CullFace);
+
+            // ==== РЕНДЕР ЗЕМЛИ ====
             Matrix4 earthModel = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(-90f)) * Matrix4.CreateRotationY(_earthRotation);
             _shader.SetMatrix4("model", earthModel);
             _earthTexture.Use();
             _earth.Render();
 
-            // Луна
+            // ==== РЕНДЕР ЛУНЫ ====
             Vector3 moonPosition = new Vector3(MathF.Cos(_moonOrbitAngle) * 3f, 0f, MathF.Sin(_moonOrbitAngle) * 3f);
-            Matrix4 moonModel =Matrix4.CreateRotationX(MathHelper.DegreesToRadians(-90f)) * Matrix4.CreateScale(0.27f) *Matrix4.CreateTranslation(moonPosition);
+            Matrix4 moonModel = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(-90f)) *
+                                Matrix4.CreateScale(0.27f) *
+                                Matrix4.CreateTranslation(moonPosition);
             _shader.SetMatrix4("model", moonModel);
             _moonTexture.Use();
             _moon.Render();
@@ -95,7 +111,6 @@ namespace GamePlanet
             var keyboard = KeyboardState;
             var mouse = MouseState;
 
-            // Управление окнами
             if (keyboard.IsKeyPressed(Keys.Escape))
                 Close();
 
@@ -111,7 +126,6 @@ namespace GamePlanet
                 GL.PolygonMode(MaterialFace.FrontAndBack, _wireframe ? PolygonMode.Line : PolygonMode.Fill);
             }
 
-            // Сброс камеры
             if (keyboard.IsKeyPressed(Keys.R))
             {
                 _camera.Position = new Vector3(0f, 0f, 10f);
@@ -119,26 +133,21 @@ namespace GamePlanet
                 _camera.Pitch = 0f;
             }
 
-            // Переключение состояния камеры (активна/неактивна)
             if (keyboard.IsKeyPressed(Keys.Space))
             {
                 _camera.ToggleCameraControl();
                 CursorState = _camera.IsCameraActive ? CursorState.Grabbed : CursorState.Normal;
             }
 
-            // Обновление позиции камеры (если активна)
             _camera.Update(args, keyboard);
 
             if (_camera.IsCameraActive && IsFocused)
             {
-                _camera.AddRotation(mouse.Delta.X, -mouse.Delta.Y); // -Y — инвертируем, т.к. мышь двигается вниз — pitch вверх
+                _camera.AddRotation(mouse.Delta.X, -mouse.Delta.Y);
             }
 
-            // Приближение/отдаление
-            if (mouse.ScrollDelta.Y != 0)
-                _camera.Zoom(mouse.ScrollDelta.Y * 5f);
 
-            // Анимация
+            // Анимация вращения
             _earthRotation += (float)args.Time * 0.5f;
             _moonOrbitAngle += (float)args.Time;
         }
@@ -155,10 +164,13 @@ namespace GamePlanet
 
             _earthTexture?.Dispose();
             _moonTexture?.Dispose();
+            _skyTexture?.Dispose();
+
             _shader?.Dispose();
 
             _earth?.Dispose();
             _moon?.Dispose();
+            _skySphere?.Dispose();
         }
     }
 }
