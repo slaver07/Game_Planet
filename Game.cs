@@ -12,10 +12,12 @@ namespace GamePlanet
         private Sphere _earth;
         private Sphere _moon;
         private Sphere _skySphere;
+        private Sphere _cloudsSphere;
 
         private Texture _earthTexture;
         private Texture _moonTexture;
         private Texture _skyTexture;
+        private Texture _cloudsTexture;
 
         private Shader _shader;
 
@@ -53,11 +55,16 @@ namespace GamePlanet
 
             _earth = new Sphere();
             _moon = new Sphere();
-            _skySphere = new Sphere(1f, 72, 36); // гладкая сфера
+            _skySphere = new Sphere(1f, 288, 144);
+            _cloudsSphere = new Sphere();
 
             _earthTexture = new Texture("Textures/earth.jpg"); //8k_earth_nightmap  earth
             _moonTexture = new Texture("Textures/moon.jpg");
             _skyTexture = new Texture("Textures/stars.jpg");
+            _cloudsTexture = new Texture("Textures/earth-clouds.png"); //earth-clouds.webp
+
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             _camera = new Camera(new Vector3(0f, 0f, 10f));
             CursorState = CursorState.Grabbed;
@@ -99,6 +106,15 @@ namespace GamePlanet
             _shader.SetMatrix4("model", moonModel);
             _moonTexture.Use();
             _moon.Render();
+
+            // ==== РЕНДЕР ОБЛАКОВ (ПОВЕРХ ЗЕМЛИ) ====
+            Matrix4 cloudsModel = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(-90f)) *
+                                  Matrix4.CreateScale(1.01f) * // чуть больше, чем Земля
+                                  Matrix4.CreateRotationY(_earthRotation);
+            _shader.SetMatrix4("model", cloudsModel);
+            _cloudsTexture.Use();
+            _cloudsSphere.Render();
+
 
             SwapBuffers();
         }
@@ -165,12 +181,14 @@ namespace GamePlanet
             _earthTexture?.Dispose();
             _moonTexture?.Dispose();
             _skyTexture?.Dispose();
+            _cloudsTexture?.Dispose();
 
             _shader?.Dispose();
 
             _earth?.Dispose();
             _moon?.Dispose();
             _skySphere?.Dispose();
+            _cloudsSphere?.Dispose();
         }
     }
 }

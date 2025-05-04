@@ -12,7 +12,7 @@ namespace GamePlanet
         private int _ebo;
         private int _indexCount;
 
-        public Sphere(float radius = 1f, int sectorCount = 36, int stackCount = 18)
+        public Sphere(float radius = 1f, int sectorCount = 288, int stackCount = 144)
         {
             List<float> vertices = new List<float>();
             List<uint> indices = new List<uint>();

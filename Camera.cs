@@ -19,7 +19,7 @@ namespace GamePlanet
         private float _speed = 5f;
         private float _sensitivity = 0.2f;
 
-        private float _minDistance = 5f;
+        private float _minDistance = 8f;
         private float _maxDistance = 30f;
 
         public bool IsCameraActive { get; private set; } = true;

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -8,6 +8,8 @@
   <ItemGroup>
     <None Remove="Textures\1.jpg" />
     <None Remove="Textures\8k_earth_nightmap.jpg" />
+    <None Remove="Textures\earth-clouds.png" />
+    <None Remove="Textures\earth-clouds.webp" />
     <None Remove="Textures\earth.jpg" />
     <None Remove="Textures\moon.jpg" />
     <None Remove="Textures\stars.jpg" />
@@ -15,6 +17,9 @@
 
   <ItemGroup>
     <Content Include="Textures\8k_earth_nightmap.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Textures\earth-clouds.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Textures\stars.jpg">
