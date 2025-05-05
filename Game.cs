@@ -61,7 +61,7 @@ namespace GamePlanet
             _earthTexture = new Texture("Textures/earth.jpg"); //8k_earth_nightmap  earth
             _moonTexture = new Texture("Textures/moon.jpg");
             _skyTexture = new Texture("Textures/stars.jpg");
-            _cloudsTexture = new Texture("Textures/earth-clouds.png"); //earth-clouds.webp
+            _cloudsTexture = new Texture("Textures/earth-clouds.png");
 
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
@@ -80,9 +80,9 @@ namespace GamePlanet
             _shader.SetMatrix4("view", _camera.GetViewMatrix());
             _shader.SetMatrix4("projection", _camera.GetProjectionMatrix(Size.X, Size.Y));
 
-            // ==== РЕНДЕР ФОНА (звёздной сферы) ====
-            GL.DepthMask(false); // Не пишем в буфер глубины
-            GL.Disable(EnableCap.CullFace); // Отрисовать внутреннюю часть сферы
+            //РЕНДЕР ФОНА
+            GL.DepthMask(false);
+            GL.Disable(EnableCap.CullFace);
 
             Matrix4 skyModel = Matrix4.CreateScale(100f) * Matrix4.CreateTranslation(_camera.Position);
             _shader.SetMatrix4("model", skyModel);
@@ -92,13 +92,13 @@ namespace GamePlanet
             GL.DepthMask(true);
             GL.Enable(EnableCap.CullFace);
 
-            // ==== РЕНДЕР ЗЕМЛИ ====
+            //РЕНДЕР ЗЕМЛИ
             Matrix4 earthModel = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(-90f)) * Matrix4.CreateRotationY(_earthRotation);
             _shader.SetMatrix4("model", earthModel);
             _earthTexture.Use();
             _earth.Render();
 
-            // ==== РЕНДЕР ЛУНЫ ====
+            //РЕНДЕР ЛУНЫ
             Vector3 moonPosition = new Vector3(MathF.Cos(_moonOrbitAngle) * 3f, 0f, MathF.Sin(_moonOrbitAngle) * 3f);
             Matrix4 moonModel = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(-90f)) *
                                 Matrix4.CreateScale(0.27f) *
@@ -107,9 +107,9 @@ namespace GamePlanet
             _moonTexture.Use();
             _moon.Render();
 
-            // ==== РЕНДЕР ОБЛАКОВ (ПОВЕРХ ЗЕМЛИ) ====
+            //РЕНДЕР ОБЛАКОВ 
             Matrix4 cloudsModel = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(-90f)) *
-                                  Matrix4.CreateScale(1.01f) * // чуть больше, чем Земля
+                                  Matrix4.CreateScale(1.01f) *
                                   Matrix4.CreateRotationY(_earthRotation);
             _shader.SetMatrix4("model", cloudsModel);
             _cloudsTexture.Use();
@@ -163,7 +163,6 @@ namespace GamePlanet
             }
 
 
-            // Анимация вращения
             _earthRotation -= (float)args.Time * 0.5f;
             _moonOrbitAngle += (float)args.Time;
         }
