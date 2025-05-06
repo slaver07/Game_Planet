@@ -55,7 +55,7 @@ namespace GamePlanet
 
             _earth = new Sphere();
             _moon = new Sphere();
-            _skySphere = new Sphere(1f, 400, 200);
+            _skySphere = new Sphere();
             _cloudsSphere = new Sphere();
 
             _earthTexture = new Texture("Textures/earth.jpg"); //8k_earth_nightmap  earth
