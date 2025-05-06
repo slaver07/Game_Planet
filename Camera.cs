@@ -17,7 +17,7 @@ namespace GamePlanet
         private float _yaw = -90f;
 
         private float _speed = 5f;
-        private float _sensitivity = 0.2f;
+        private float _sensitivity = 0.1f;
 
         private float _minDistance = 8f;
         private float _maxDistance = 30f;

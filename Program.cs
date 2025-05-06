@@ -6,7 +6,7 @@ namespace GamePlanet
     {
         static void Main(string[] args)
         {
-            using (Game game = new Game(1800, 1200))
+            using (Game game = new Game(1500, 1000))
             {
                 game.Run();
             }
